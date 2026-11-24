@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>วันนี้กินอะไรดี? - สุ่มเมนูอาหาร</title>
+    <!-- บรรทัดนี้ทำหน้าที่เชื่อมไฟล์ style.css เข้ากับหน้าเว็บ -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="card">
+        <h1>🍽️ วันนี้กินอะไรดี?</h1>
+        <p class="subtitle">คิดไม่ออกบอกเว็บนี้ กดปุ่มให้ระบบเลือกให้เลย!</p>
+
+        <div class="result-box">
+            <div class="food-emoji" id="foodEmoji">🤔</div>
+            <div class="food-name" id="foodName">พร้อมหรือยัง?</div>
+            <div class="food-desc" id="foodDesc">กดปุ่มสีแดงด้านล่างเพื่อเริ่มสุ่มเมนู</div>
+        </div>
+
+        <button class="spin-btn" id="spinBtn" onclick="startRandom()">🎲 สุ่มเมนูอาหาร!</button>
+
+        <div class="add-section">
+            <p>➕ เพิ่มเมนูที่อยากกินเข้าไปในรายการสุ่ม:</p>
+            <div class="input-group">
+                <input type="text" id="newFoodInput" placeholder="เช่น ข้าวมันไก่, ชาบู..." onkeypress="handleEnter(event)">
+                <button class="add-btn" onclick="addNewFood()">เพิ่ม</button>
+            </div>
+            <div class="count-text" id="menuCount">มีเมนูให้สุ่มทั้งหมด 12 รายการ</div>
+        </div>
+    </div>
+
+    <script>
+        const menus = [
+            { name: "ข้าวกะเพราหมูสับไข่ดาว", emoji: "🍳", desc: "เมนูสิ้นคิดที่อร่อยที่สุดในสามโลก" },
+            { name: "ก๋วยเตี๋ยวเรือน้ำตก", emoji: "🍜", desc: "ซดน้ำซุปร้อนๆ เข้มข้นถึงใจ" },
+            { name: "ข้าวมันไก่ต้ม + ไก่ทอด", emoji: "🍗", desc: "ผสมสองอย่างไปเลย จบปัญหาเลือกไม่ได้" },
+            { name: "ส้มตำปูปลาร้า + ไก่ย่าง", emoji: "🥗", desc: "แซ่บๆ นัวๆ เพิ่มข้าวเหนียวร้อนๆ" },
+            { name: "ข้าวผัดหมูใส่ไข่", emoji: "🍛", desc: "บีบมะนาว พริกน้ำปลาหน่อย อร่อยเหาะ" },
+            { name: "ราดหน้าหมูหมัก", emoji: "🍲", desc: "เส้นใหญ่หอมกลิ่นกระทะ น้ำราดกลมกล่อม" },
+            { name: "ข้าวหมูแดงหมูกรอบ", emoji: "🥓", desc: "หมูกรอบเน้นๆ ราดน้ำฉ่ำๆ" },
+            { name: "สุกี้น้ำรวมมิตร", emoji: "🥘", desc: "อิ่มอร่อยสบายท้อง น้ำจิ้มรสเด็ด" },
+            { name: "ข้าวไข่เจียวหมูสับ", emoji: "🍳", desc: "กรอบนอกนุ่มใน กินกับซอสพริก" },
+            { name: "ผัดซีอิ๊วหมู", emoji: "🍝", desc: "เส้นเหนียวนุ่ม ผัดซีอิ๊วดำหอมๆ" },
+            { name: "ยำมาม่ารวมมิตร", emoji: "🌶️", desc: "เปรี้ยว เผ็ด แซ่บ ตาสว่างแน่นอน" },
+            { name: "ข้าวขาหมูคากิ", emoji: "🍖", desc: "เนื้อนุ่มละลายในปาก กินคู่กับผักกาดดอง" }
+        ];
+
+        function updateCount() {
+            document.getElementById('menuCount').innerText = `มีเมนูให้สุ่มทั้งหมด ${menus.length} รายการ`;
+        }
+
+        function startRandom() {
+            const btn = document.getElementById('spinBtn');
+            const nameEl = document.getElementById('foodName');
+            const emojiEl = document.getElementById('foodEmoji');
+            const descEl = document.getElementById('foodDesc');
+
+            btn.disabled = true;
+            btn.innerText = "กำลังสุ่ม...";
+            descEl.innerText = "ติ๊กต่อก ติ๊กต่อก...";
+
+            let count = 0;
+            const totalSpins = 20;
+
+            const interval = setInterval(() => {
+                const randomIndex = Math.floor(Math.random() * menus.length);
+                nameEl.innerText = menus[randomIndex].name;
+                emojiEl.innerText = menus[randomIndex].emoji;
+                count++;
+
+                if (count >= totalSpins) {
+                    clearInterval(interval);
+                    const finalChoice = menus[Math.floor(Math.random() * menus.length)];
+                    nameEl.innerText = finalChoice.name;
+                    emojiEl.innerText = finalChoice.emoji;
+                    descEl.innerText = finalChoice.desc;
+
+                    btn.disabled = false;
+                    btn.innerText = "🎲 สุ่มใหม่อีกครั้ง!";
+                }
+            }, 70);
+        }
+
+        function addNewFood() {
+            const input = document.getElementById('newFoodInput');
+            const foodText = input.value.trim();
+            
+            if (foodText === "") return;
+
+            menus.push({
+                name: foodText,
+                emoji: "😋",
+                desc: "เมนูพิเศษที่คุณเพิ่มเข้ามาเอง!"
+            });
+
+            input.value = "";
+            updateCount();
+            alert(`เพิ่มเมนู "${foodText}" เรียบร้อยแล้ว!`);
+        }
+
+        function handleEnter(event) {
+            if (event.key === 'Enter') {
+                addNewFood();
+            }
+        }
+    </script>
+
+</body>
+</html>
